@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/styles.css">
+    <title>Bouncing Ball</title>
+</head>
+<body>
+    <canvas id="canvas" width="400" height="400"></canvas>
+    <script>
+        let canvas = document.getElementById("canvas");
+        let ctx = canvas.getContext("2d");
+
+        let width = canvas.width;
+        let height = canvas.height;
+
+        const colors = ["red", "orange", "yellow", "green", "blue", "purple"]; // масив з різними кольорами
+        const ballsArray = []; // масив для нових м'ячів
+        
+        let ballId = 0;
+        
+
+        let Ball = function () { // конструктор м'ча
+            this.color = colors[Math.floor(Math.random()*colors.length)];
+            this.Id = ballId++;
+            this.x = 0;
+            this.y = 0;
+            this.xSpeed = Math.floor(Math.random() * 11) - 5;
+            this.ySpeed = Math.floor(Math.random() * 11) - 5;
+        };
+        
+        for (let i = 0; i < 10; i++) { // цикл який заповнює масив новими м'ячами
+            ballsArray.push(new Ball());
+        }
+
+        console.log(ballsArray)
+
+        let circle = function (x, y, radius, fillCircle, color) { // функція відмалювання м'яча
+            ctx.beginPath();
+            ctx.arc(x, y, radius, 0 , Math.PI*2, false);
+            if (color) {
+                ctx.fillStyle = color;
+            }
+            if (fillCircle) {
+                ctx.fill();
+            } else {
+                ctx.stroke();
+            }
+        };
+
+        Ball.prototype.draw = function () { // метод виклику функції малювання м'яча
+            circle(this.x, this.y, 3, true, this.color);
+        }
+        
+        Ball.prototype.move = function () { //метод руху м'яча по площині
+            this.x += this.xSpeed;
+            this.y += this.ySpeed;
+        }
+
+        Ball.prototype.checkCollision = function () { // метод перевірки на зіткенення (перевірка колізій)
+            if (this.x < 0 || this.x > width) {
+                this.xSpeed = -this.xSpeed;
+            }
+            if (this.y < 0 || this.y > height) {
+                this.ySpeed = -this.ySpeed;
+            }
+        };
+
+        let ball = new Ball();
+
+        setInterval(() => { // функція-інвервал запуску всього скрипта
+            ctx.clearRect(0,0, width, height);
+            for (let i = 0; i < ballsArray.length; i++) {
+                const element = ballsArray[i];
+                element.draw();
+                element.move();
+                element.checkCollision();
+            }
+
+            ctx.strokeRect(0,0,width,height);
+        }, 30);
+       
+    </script>
+</body>
+</html>
